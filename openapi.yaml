@@ -1,0 +1,14 @@
+openapi: 3.0.0
+info:
+  title: API de sync schedule asignatura y modulos
+  version: 1.0.0
+  description: API definicion para schedule asignatura y modulos
+
+servers:
+  - url: http://localhost/api
+    description: server url api
+
+paths:
+  /institution:
+    post:
+      summary: Guardar institucion
