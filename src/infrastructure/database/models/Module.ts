@@ -1,6 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import {sequelize} from "../sequelize";
-import {SectionSequelize} from "./section";
+import {SectionSequelize} from "./Section";
 
 interface ModuleRow {
     id: number,

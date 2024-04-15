@@ -1,6 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import {sequelize} from "../sequelize";
-import {InstitutionSequelize} from "./institution";
+import {InstitutionSequelize} from "./Institution";
 
 interface CourseRow{
     id: number,

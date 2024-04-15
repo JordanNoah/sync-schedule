@@ -1,6 +1,7 @@
 import express, {Router} from "express";
 import * as http from "node:http";
 import {DbSequelize} from "../infrastructure/database/init";
+import {Rabbitmq} from "../infrastructure/eventbus/rabbitmq";
 
 interface Options {
     port: number,
@@ -21,6 +22,7 @@ export class Server {
     public async start() {
         try {
             await DbSequelize()
+            await Rabbitmq.init()
             this.app.use(express.json())
             this.app.use(this.routes)
             const server = http.createServer(this.app)

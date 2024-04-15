@@ -1,20 +1,24 @@
-import {DataTypes, Model, Sequelize} from "sequelize"
+import {DataTypes, Model} from "sequelize";
 import {sequelize} from "../sequelize";
-import {CourseSequelize} from "./course";
+import {CourseSequelize} from "./Course";
 
-interface SectionRow {
+interface GroupRow {
     id: number,
+    external_id: number,
+    id_number: string,
     name: string,
     description: string,
-    course_id: number,
+    course_id:number,
     created_at?: Date,
     updated_at?: Date,
     deleted_at?: Date
 }
 
-export class SectionSequelize extends Model<SectionRow, Omit<SectionRow, 'id'>> {
+export class GroupSequelize extends Model<GroupRow, Omit<GroupRow, 'id'>> {
     declare id: number
-    declare name: number
+    declare external_id: number
+    declare id_number: number
+    declare name: string
     declare description: string
     declare course_id: number
     declare readonly created_at: Date
@@ -22,20 +26,28 @@ export class SectionSequelize extends Model<SectionRow, Omit<SectionRow, 'id'>> 
     declare readonly deleted_at: Date
 }
 
-SectionSequelize.init({
+GroupSequelize.init({
     id:{
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true
+        autoIncrement: true,
+    },
+    external_id:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    id_number:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     name:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     description:{
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
     },
     course_id:{
         type: DataTypes.INTEGER,
@@ -47,8 +59,8 @@ SectionSequelize.init({
     }
 },{
     sequelize,
-    timestamps:true,
-    tableName:'section',
-    underscored:true,
-    paranoid:true
+    timestamps: true,
+    tableName: "group",
+    underscored: true,
+    paranoid: true
 })
