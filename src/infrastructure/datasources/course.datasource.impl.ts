@@ -1,42 +1,134 @@
 import {CourseDatasource} from "../../domain/datasources/course.datasource";
-import {CourseDto} from "../../domain/dtos/course.dto";
 import {CourseEntity} from "../../domain/entities/course.entity";
 import {CustomError} from "../../domain/errors/custom.error";
-import {CourseSequelize} from "../database/models";
+import {CourseSequelize, InstitutionSequelize} from "../database/models";
+import {RegisterCourseDto} from "../../domain/dtos/course/register-course.dto";
+import {InstitutionEntity} from "../../domain/entities/institution.entity";
+import {InstitutionDatasourceImpl} from "./institution.datasource.impl";
 
 export class CourseDatasourceImpl extends CourseDatasource {
-    async register(courseDto: CourseDto): Promise<CourseEntity> {
+    async register(registerCourseDto:RegisterCourseDto): Promise<CourseEntity> {
         try {
+            const {institution,course} = registerCourseDto
 
-            const [course, created] = await CourseSequelize.findOrCreate({
-                defaults:{
-                    external_id: courseDto.external_id,
-                    institution_id: courseDto.institution_id,
-                    name: courseDto.name,
-                    short_name: courseDto.short_name,
-                    id_number: courseDto.id_number,
-                    start_date: courseDto.start_date,
-                    end_date: courseDto.end_date
-                },
+            const institutionEntity = await new InstitutionDatasourceImpl().getByAbbreviationAndModality(institution.institutionAbbreviation,institution.modality)
+
+            if(!institutionEntity){ throw CustomError.notFound('Institution not found')}
+
+            const [courseDb, created] = await CourseSequelize.findOrCreate({
                 where:{
-                    external_id: courseDto.external_id,
-                    institution_id: courseDto.institution_id
+                    external_id: course.id,
+                    institution_id: institutionEntity.id
+                },
+                defaults:{
+                    external_id: course.id,
+                    institution_id: institutionEntity.id,
+                    name: course.fullname,
+                    short_name: course.shortname,
+                    id_number: course.idnumber,
+                    start_date: course.startdate,
+                    end_date: course.enddate
                 }
             })
 
             return new CourseEntity(
-                course.id,
-                course.external_id,
-                course.institution_id,
-                course.name,
-                course.short_name,
-                course.id_number,
-                course.start_date,
-                course.end_date,
-                course.created_at,
-                course.updated_at,
-                course.deleted_at
+                courseDb.id,
+                courseDb.external_id,
+                courseDb.institution_id,
+                courseDb.name,
+                courseDb.short_name,
+                courseDb.id_number,
+                courseDb.start_date,
+                courseDb.end_date,
+                courseDb.created_at,
+                courseDb.updated_at,
+                courseDb.deleted_at
             )
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async getById(id: number): Promise<CourseEntity | null> {
+        try {
+            const courseEntityDb = await CourseSequelize.findOne({
+                where:{
+                    id:id
+                },
+                include:[
+                    {
+                        model:InstitutionSequelize,
+                        as:"institution"
+                    }
+                ]
+            })
+
+            if (!courseEntityDb) { return null }
+
+            return new CourseEntity(
+                courseEntityDb.id,
+                courseEntityDb.external_id,
+                courseEntityDb.institution_id,
+                courseEntityDb.name,
+                courseEntityDb.short_name,
+                courseEntityDb.id_number,
+                courseEntityDb.start_date,
+                courseEntityDb.end_date,
+                courseEntityDb.created_at,
+                courseEntityDb.updated_at,
+                courseEntityDb.deleted_at
+            )
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async getAll(): Promise<CourseEntity[]> {
+        try {
+            return await CourseSequelize.findAll()
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async deleteById(id: number): Promise<CourseEntity> {
+        try {
+            const courseEntityDb = await this.getById(id)
+            if (!courseEntityDb) { throw CustomError.notFound('Course not found') }
+
+            await CourseSequelize.destroy({
+                where:{
+                    id: id
+                }
+            })
+
+            return courseEntityDb
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async update(registerCourseDto: RegisterCourseDto): Promise<CourseEntity | null> {
+        try {
+            const {institution, course} = registerCourseDto
+
+            const institutionDb = await new InstitutionDatasourceImpl().getByAbbreviationAndModality(institution.institutionAbbreviation,institution.modality)
+
+            if (!institutionDb) { throw CustomError.notFound('Institution not found')}
+
+            const courseDb = await this.get
         } catch (error) {
             if (error instanceof CustomError) {
                 throw error;

@@ -8,7 +8,7 @@ interface CourseRow{
     institution_id: number,
     name: string,
     short_name: string,
-    id_number: string,
+    id_number: string | undefined | null,
     start_date: Date,
     end_date: Date,
     created_at?: Date,
@@ -59,7 +59,7 @@ CourseSequelize.init({
     },
     id_number:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     start_date: {
         type: DataTypes.DATE,

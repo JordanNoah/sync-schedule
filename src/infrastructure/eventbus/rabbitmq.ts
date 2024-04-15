@@ -5,6 +5,7 @@ import {EventReceivingQueueDto} from "../../domain/dtos/eventReceivingQueue.dto"
 import {EventReceivingQueueDatasourceImpl} from "../datasources/eventReceivingQueue.datasource.impl";
 import {EventReceivingQueueRepository} from "../../domain/repositories/eventReceivingQueue.repository";
 import {EventReceivingQueueRepositoryImpl} from "../repositories/eventReceivingQueue.repository.impl";
+import {EventReceivingQueueEntity} from "../../domain/entities/eventReceivingQueue.entity";
 
 
 export class Rabbitmq {
@@ -55,10 +56,9 @@ export class Rabbitmq {
                         const datasource = new EventReceivingQueueDatasourceImpl()
                         const eventRepository = new EventReceivingQueueRepositoryImpl(datasource)
 
-                        await eventRepository.register(eventReceivingDto!).catch((err) => {
-                            console.log(err)
-                        })
+                        const eventReceivingQueue = await eventRepository.register(eventReceivingDto!)
 
+                        console.log(`Event consumed: ${eventReceivingQueue.event_name}`)
                         this._channel.ack(msg!)
                     } catch (error) {
                         console.log(error)

@@ -1,14 +1,14 @@
 export class EventReceivingQueueEntity {
     constructor(
-        id: number,
-        uuid: string,
-        receivedData: string,
-        processedAt: Date | null,
-        attempts: number,
-        event_name: string,
-        message_id: string,
-        createdAt:Date,
-        updatedAt:Date,
-        deletedAt:Date
+        public id: number,
+        public uuid: string,
+        public receivedData: string,
+        public processedAt: Date | null,
+        public attempts: number,
+        public event_name: string,
+        public message_id: string,
+        public createdAt:Date,
+        public updatedAt:Date,
+        public deletedAt:Date
     ) {}
 }

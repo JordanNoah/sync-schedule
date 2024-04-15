@@ -6,8 +6,9 @@ interface StatusTransactionCatalogRow {
     name: string,
     abbreviation: string,
     description: string,
-    createdAt?:Date,
-    updatedAt?: Date
+    created_at?:Date,
+    updated_at?: Date,
+    deleted_at?: Date
 }
 
 export class StatusTransactionCatalogSequelize extends Model<StatusTransactionCatalogRow, Omit<StatusTransactionCatalogRow, 'id'>> {
@@ -15,8 +16,9 @@ export class StatusTransactionCatalogSequelize extends Model<StatusTransactionCa
     declare name: string
     declare abbreviation: string
     declare description: string
-    declare readonly createdAt: Date
-    declare readonly updatedAt: Date
+    declare readonly created_at: Date
+    declare readonly updated_at: Date
+    declare readonly deleted_at: Date
 }
 
 StatusTransactionCatalogSequelize.init({

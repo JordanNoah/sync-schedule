@@ -41,4 +41,33 @@ export class EventReceivingQueueDatasourceImpl extends EventReceivingQueueDataSo
             throw CustomError.internalSever();
         }
     }
+    async getById(id: number): Promise<EventReceivingQueueEntity | null> {
+        try {
+            let eventReceivingQueue = await EventReceivingQueueSequelize.findOne({
+                where:{
+                    id:id
+                }
+            })
+
+            if (!eventReceivingQueue) { return null }
+
+            return new EventReceivingQueueEntity(
+                eventReceivingQueue.id,
+                eventReceivingQueue.uuid,
+                eventReceivingQueue.received_data,
+                eventReceivingQueue.processed_at,
+                eventReceivingQueue.attempts,
+                eventReceivingQueue.event_name,
+                eventReceivingQueue.message_id,
+                eventReceivingQueue.created_at,
+                eventReceivingQueue.updated_at,
+                eventReceivingQueue.deleted_at
+            )
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
 }
