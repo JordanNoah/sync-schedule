@@ -5,7 +5,7 @@ import {CourseSequelize} from "./Course";
 interface GroupRow {
     id: number,
     external_id: number,
-    id_number: string,
+    id_number: string | null | undefined,
     name: string,
     description: string,
     course_id:number,
@@ -17,7 +17,7 @@ interface GroupRow {
 export class GroupSequelize extends Model<GroupRow, Omit<GroupRow, 'id'>> {
     declare id: number
     declare external_id: number
-    declare id_number: number
+    declare id_number: string
     declare name: string
     declare description: string
     declare course_id: number
@@ -38,7 +38,7 @@ GroupSequelize.init({
         allowNull: false,
     },
     id_number:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     name:{
