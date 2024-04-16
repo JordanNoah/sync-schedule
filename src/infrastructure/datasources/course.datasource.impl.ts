@@ -5,6 +5,7 @@ import {CourseSequelize, InstitutionSequelize} from "../database/models";
 import {RegisterCourseDto} from "../../domain/dtos/course/register-course.dto";
 import {InstitutionEntity} from "../../domain/entities/institution.entity";
 import {InstitutionDatasourceImpl} from "./institution.datasource.impl";
+import {DeleteCourseMdlDto} from "../../domain/dtos/course/delete-course-mdl.dto";
 
 export class CourseDatasourceImpl extends CourseDatasource {
     async register(registerCourseDto:RegisterCourseDto): Promise<CourseEntity> {
@@ -128,7 +129,76 @@ export class CourseDatasourceImpl extends CourseDatasource {
 
             if (!institutionDb) { throw CustomError.notFound('Institution not found')}
 
-            const courseDb = await this.get
+            const courseDb = await this.getByExternalIdAndInstitutionId(course.id,institutionDb.id)
+            if (!courseDb) { throw CustomError.notFound('Course not found')}
+
+            await CourseSequelize.update({
+                external_id: course.id,
+                institution_id: institutionDb.id,
+                name: course.fullname,
+                short_name: course.shortname,
+                id_number: course.idnumber,
+                start_date: course.startdate,
+                end_date: course.enddate
+            },{
+                where:{
+                    external_id: course.id,
+                    institution_id: institutionDb.id
+                }
+            })
+
+            return await this.getByExternalIdAndInstitutionId(course.id,institutionDb.id)
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async getByExternalIdAndInstitutionId(externalId: number, institutionId: number): Promise<CourseEntity | null> {
+        try {
+            const courseDb = await CourseSequelize.findOne({
+                where:{
+                    external_id: externalId,
+                    institution_id: institutionId
+                }
+            })
+
+            if (!courseDb) return null
+
+            return new CourseEntity(
+                courseDb.id,
+                courseDb.external_id,
+                courseDb.institution_id,
+                courseDb.name,
+                courseDb.short_name,
+                courseDb.id_number,
+                courseDb.start_date,
+                courseDb.end_date,
+                courseDb.created_at,
+                courseDb.updated_at,
+                courseDb.deleted_at
+            )
+        } catch (error) {
+            if (error instanceof CustomError) {
+                throw error
+            }
+            throw CustomError.internalSever();
+        }
+    }
+
+    async deleteByExternalId(deleteByExternalId: DeleteCourseMdlDto): Promise<CourseEntity> {
+        try {
+            const {institution,courseid} = deleteByExternalId
+
+            const institutionDb = await new InstitutionDatasourceImpl().getByAbbreviationAndModality(institution.institutionAbbreviation,institution.modality)
+            if (!institutionDb) { throw CustomError.notFound('Institution not found')}
+
+            const courseDb = await this.getByExternalIdAndInstitutionId(courseid,institutionDb.id)
+            if (!courseDb) { throw CustomError.notFound('Course not found')}
+
+            return courseDb
         } catch (error) {
             if (error instanceof CustomError) {
                 throw error;

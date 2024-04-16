@@ -6,6 +6,7 @@ export abstract class CourseDatasource {
     abstract register(registerCourseDto:RegisterCourseDto): Promise<CourseEntity>
     abstract getById(id:number): Promise<CourseEntity | null>
     abstract getAll(): Promise<CourseEntity[]>
+    abstract getByExternalIdAndInstitutionId(externalId:number, institutionId: number): Promise<CourseEntity | null>
     abstract deleteById(id:number): Promise<CourseEntity>
     abstract update(registerCourseDto:RegisterCourseDto): Promise<CourseEntity | null>
     abstract deleteByExternalId(deleteByExternalId: DeleteCourseMdlDto): Promise<CourseEntity>
