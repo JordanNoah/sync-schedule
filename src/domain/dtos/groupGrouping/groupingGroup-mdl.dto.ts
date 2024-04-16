@@ -4,6 +4,7 @@ import {CourseMdlDto} from "../course/course-mdl.dto";
 
 export class GroupingGroupMdlDto {
     constructor(
+        public id: number,
         public grouping: GroupingMdlDto,
         public group: GroupMdlDto,
         public course: CourseMdlDto,
